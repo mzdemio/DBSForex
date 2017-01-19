@@ -1,27 +1,16 @@
 <?
-// This is a template for a PHP scraper on morph.io (https://morph.io)
-// including some code snippets below that you should find helpful
+$xml = simplexml_load_file("http://www.dbs.com/ratesonline/xml/Pages/XFXBRA.xml");
 
-// require 'scraperwiki.php';
-// require 'scraperwiki/simple_html_dom.php';
-//
-// // Read in a page
-// $html = scraperwiki::scrape("http://foo.com");
-//
-// // Find something on the page using css selectors
-// $dom = new simple_html_dom();
-// $dom->load($html);
-// print_r($dom->find("table.list"));
-//
-// // Write out to the sqlite database using scraperwiki library
-// scraperwiki::save_sqlite(array('name'), array('name' => 'susan', 'occupation' => 'software developer'));
-//
-// // An arbitrary query against the database
-// scraperwiki::select("* from data where 'name'='peter'")
-
-// You don't have to do things with the ScraperWiki library.
-// You can use whatever libraries you want: https://morph.io/documentation/php
-// All that matters is that your final data is written to an SQLite database
-// called "data.sqlite" in the current working directory which has at least a table
-// called "data".
+foreach ($xml->xpath("/rates/record/currency") as $child) {
+    if($child->attributes()->value == "New Zealand Dollar"){
+        $parent = $child->xpath("parent::*");
+        $sell = $parent[0]->xpath("record_1/selling_ttod");
+        $rate = floatval($sell[0]->attributes()->value[0]);
+        $total = number_format(65000/$rate,2);
+        $record = array( 'currency' => 'NZD', 'Total' => $total);
+        print "Total : $total \n";
+        
+        scraperwiki::save(array('currency'), $record); 
+    }
+}
 ?>
