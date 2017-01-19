@@ -6,11 +6,9 @@ foreach ($xml->xpath("/rates/record/currency") as $child) {
         $parent = $child->xpath("parent::*");
         $sell = $parent[0]->xpath("record_1/selling_ttod");
         $rate = floatval($sell[0]->attributes()->value[0]);
-        $total = number_format(65000/$rate,2);
+        $total = number_format(190000/$rate,2);
         $record = array( 'currency' => 'NZD', 'Total' => $total);
-        print "Total : $total \n";
-        
-        scraperwiki::save(array('currency'), $record); 
+        print "Total : $total \n"; 
     }
 }
 ?>
